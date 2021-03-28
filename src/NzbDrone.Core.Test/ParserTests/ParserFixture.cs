@@ -129,7 +129,7 @@ namespace NzbDrone.Core.Test.ParserTests
             Parser.Parser.ParseMovieTitle(postTitle).TmdbId.Should().Be(tmdbId);
         }
 
-        [TestCase("The.Movie.Name.2008.720p.BluRay.X264-AMIABLE")]
+        [TestCase("The.Italian.Movie.2025.720p.BluRay.X264-AMIABLE")]
         public void should_not_parse_wrong_language_in_title(string postTitle)
         {
             var parsed = Parser.Parser.ParseMovieTitle(postTitle, true);

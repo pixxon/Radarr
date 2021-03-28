@@ -17,7 +17,7 @@ namespace NzbDrone.Core.Test.ParserTests
             result.Languages.Should().BeEquivalentTo(Language.English);
         }
 
-        [TestCase("The Movie Girl 2015")]
+        [TestCase("The Danish Movie 2015")]
         [TestCase("Movie.Title.2018.2160p.WEBRip.x265.10bit.HDR.DD5.1-GASMASK")]
         public void should_parse_language_unknown(string postTitle)
         {
