@@ -41,13 +41,6 @@ namespace NzbDrone.Core.Test.ParserTests
         [TestCase("Movie.Title.Super.Duper.Real.Proper.HDTV.x264-FTP", 2)]
         [TestCase("Movie.Title.PROPER.HDTV.x264-RiVER-RP", 2)]
         [TestCase("Movie.Title.PROPER.REAL.RERIP.1080p.BluRay.x264-TENEIGHTY", 2)]
-        [TestCase("[MGS] - Movie.Title - Eagle - [D8B6C90D]", 2)]
-        [TestCase("[Hatsuyuki] Movie Title - [848x480][23D8F455].avi", 2)]
-        [TestCase("[DeadFish] Movie Title - [720p][AAC]", 3)]
-        [TestCase("[DeadFish] Movie Title Sword - [720p][AAC]", 4)]
-        [TestCase("[Vivid-Asenshi] Akame ga Kill - [266EE983]", 2)]
-        [TestCase("[Vivid-Asenshi] Akame ga Kill - [66A05817]", 2)]
-        [TestCase("[Vivid-Asenshi] Akame ga Kill - [1F67AB55]", 2)]
         public void should_parse_version_from_title(string title, int version)
         {
             QualityParser.ParseQuality(title).Revision.Version.Should().Be(version);
