@@ -51,7 +51,7 @@ namespace NzbDrone.Core.Notifications.Plex.Server
                 _logger.Debug("Sending Update Request to Plex Server");
                 var watch = Stopwatch.StartNew();
 
-                var version = _versionCache.Get(settings.Host, () => GetVersion(settings), TimeSpan.FromHours(2));
+                var version = _versionCache.Get(settings.Address, () => GetVersion(settings), TimeSpan.FromHours(2));
                 ValidateVersion(version);
 
                 var sections = GetSections(settings);
@@ -65,14 +65,14 @@ namespace NzbDrone.Core.Notifications.Plex.Server
             }
             catch (Exception ex)
             {
-                _logger.Warn(ex, "Failed to Update Plex host: " + settings.Host);
+                _logger.Warn(ex, "Failed to Update Plex: " + settings.Address);
                 throw;
             }
         }
 
         private List<PlexSection> GetSections(PlexServerSettings settings)
         {
-            _logger.Debug("Getting sections from Plex host: {0}", settings.Host);
+            _logger.Debug("Getting sections from Plex: {0}", settings.Address);
 
             return _plexServerProxy.GetMovieSections(settings).ToList();
         }
@@ -87,7 +87,7 @@ namespace NzbDrone.Core.Notifications.Plex.Server
 
         private Version GetVersion(PlexServerSettings settings)
         {
-            _logger.Debug("Getting version from Plex host: {0}", settings.Host);
+            _logger.Debug("Getting version from Plex: {0}", settings.Address);
 
             var rawVersion = _plexServerProxy.Version(settings);
             var version = new Version(Regex.Match(rawVersion, @"^(\d+[.-]){4}").Value.Trim('.', '-'));
@@ -152,12 +152,12 @@ namespace NzbDrone.Core.Notifications.Plex.Server
         {
             try
             {
-                _versionCache.Remove(settings.Host);
+                _versionCache.Remove(settings.Address);
                 var sections = GetSections(settings);
 
                 if (sections.Empty())
                 {
-                    return new ValidationFailure("Host", _localizationService.GetLocalizedString("NotificationsPlexValidationNoMovieLibraryFound"));
+                    return new ValidationFailure(nameof(settings.Address), _localizationService.GetLocalizedString("NotificationsPlexValidationNoMovieLibraryFound"));
                 }
             }
             catch (PlexAuthenticationException ex)
@@ -167,13 +167,13 @@ namespace NzbDrone.Core.Notifications.Plex.Server
             }
             catch (PlexException ex)
             {
-                return new NzbDroneValidationFailure("Host", _localizationService.GetLocalizedString("NotificationsValidationUnableToConnect", new Dictionary<string, object> { { "exceptionMessage", ex.Message } }));
+                return new NzbDroneValidationFailure(nameof(settings.Address), _localizationService.GetLocalizedString("NotificationsValidationUnableToConnect", new Dictionary<string, object> { { "exceptionMessage", ex.Message } }));
             }
             catch (Exception ex)
             {
                 _logger.Error(ex, "Unable to connect to Plex Media Server");
 
-                return new NzbDroneValidationFailure("Host", _localizationService.GetLocalizedString("NotificationsValidationUnableToConnectToService", new Dictionary<string, object> { { "serviceName", "Plex Media Server" } }))
+                return new NzbDroneValidationFailure(nameof(settings.Address), _localizationService.GetLocalizedString("NotificationsValidationUnableToConnectToService", new Dictionary<string, object> { { "serviceName", "Plex Media Server" } }))
                        {
                            DetailedDescription = ex.Message
                        };

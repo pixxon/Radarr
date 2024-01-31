@@ -69,7 +69,7 @@ namespace NzbDrone.Core.Notifications.Plex.Server
             if (Settings.UpdateLibrary)
             {
                 _logger.Debug("Scheduling library update for movie {0} {1}", movie.Id, movie.Title);
-                var queue = _pendingMoviesCache.Get(Settings.Host, () => new PlexUpdateQueue());
+                var queue = _pendingMoviesCache.Get(Settings.Address, () => new PlexUpdateQueue());
                 lock (queue)
                 {
                     queue.Pending[movie.Id] = movie;
@@ -79,7 +79,7 @@ namespace NzbDrone.Core.Notifications.Plex.Server
 
         public override void ProcessQueue()
         {
-            var queue = _pendingMoviesCache.Find(Settings.Host);
+            var queue = _pendingMoviesCache.Find(Settings.Address);
 
             if (queue == null)
             {
