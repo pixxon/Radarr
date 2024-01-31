@@ -51,13 +51,13 @@ namespace NzbDrone.Core.Notifications.Emby
             {
                 if (ex.Response.StatusCode == HttpStatusCode.Unauthorized)
                 {
-                    return new ValidationFailure("ApiKey", _localizationService.GetLocalizedString("NotificationsValidationInvalidApiKey"));
+                    return new ValidationFailure(nameof(settings.ApiKey), _localizationService.GetLocalizedString("NotificationsValidationInvalidApiKey"));
                 }
             }
             catch (Exception ex)
             {
                 _logger.Error(ex, "Unable to send test message");
-                return new ValidationFailure("Host", _localizationService.GetLocalizedString("NotificationsValidationUnableToSendTestMessage", new Dictionary<string, object> { { "exceptionMessage", ex.Message } }));
+                return new ValidationFailure(nameof(settings.Address), _localizationService.GetLocalizedString("NotificationsValidationUnableToSendTestMessage", new Dictionary<string, object> { { "exceptionMessage", ex.Message } }));
             }
 
             return null;

@@ -44,6 +44,20 @@ namespace NzbDrone.Core.Validation
             return ruleBuilder.SetValidator(new RegularExpressionValidator(@"^(?!\/?https?://[-_a-z0-9.]+)", RegexOptions.IgnoreCase)).WithMessage($"Must be a valid URL path (ie: '{example}')");
         }
 
+        public static IRuleBuilderOptions<T, string> ValidAddress<T>(this IRuleBuilder<T, string> ruleBuilder, string example = "http://localhost:8080/radarr")
+        {
+            ruleBuilder.SetValidator(new NotEmptyValidator(null));
+            return ruleBuilder.Must(x =>
+            {
+                if (Uri.TryCreate(x, UriKind.Absolute, out var validated))
+                {
+                    return validated.Scheme == Uri.UriSchemeHttp || validated.Scheme == Uri.UriSchemeHttps;
+                }
+
+                return false;
+            }).WithMessage($"Must be a valid URL address (ie: '{example}')");
+        }
+
         public static IRuleBuilderOptions<T, int> ValidPort<T>(this IRuleBuilder<T, int> ruleBuilder)
         {
             return ruleBuilder.SetValidator(new InclusiveBetweenValidator(1, 65535))
