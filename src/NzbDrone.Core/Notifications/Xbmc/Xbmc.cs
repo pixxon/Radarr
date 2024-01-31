@@ -103,8 +103,7 @@ namespace NzbDrone.Core.Notifications.Xbmc
             }
             catch (SocketException ex)
             {
-                var logMessage = string.Format("Unable to connect to Kodi Host: {0}:{1}", Settings.Host, Settings.Port);
-                _logger.Debug(ex, logMessage);
+                _logger.Debug(ex, $"Unable to connect to Kodi: {Settings.Address}");
             }
         }
 
@@ -124,8 +123,7 @@ namespace NzbDrone.Core.Notifications.Xbmc
             }
             catch (SocketException ex)
             {
-                var logMessage = string.Format("Unable to connect to Kodi Host: {0}:{1}", Settings.Host, Settings.Port);
-                _logger.Debug(ex, logMessage);
+                _logger.Debug(ex, $"Unable to connect to Kodi: {Settings.Address}");
             }
         }
     }

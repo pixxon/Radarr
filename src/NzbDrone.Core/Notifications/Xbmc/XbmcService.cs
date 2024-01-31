@@ -89,18 +89,18 @@ namespace NzbDrone.Core.Notifications.Xbmc
 
                 if (moviePath != null)
                 {
-                    _logger.Debug("Updating movie {0} (Kodi path: {1}) on Kodi host: {2}", movie, moviePath, settings.Address);
+                    _logger.Debug($"Updating movie {movie} (Kodi path: {moviePath}) on Kodi: {settings.Address}");
                 }
                 else
                 {
-                    _logger.Debug("Movie {0} doesn't exist on Kodi host: {1}, Updating Entire Library", movie, settings.Address);
+                    _logger.Debug($"Movie {movie} doesn't exist on Kodi: {settings.Address}, Updating Entire Library");
                 }
 
                 var response = _proxy.UpdateLibrary(settings, moviePath);
 
                 if (!response.Equals("OK", StringComparison.InvariantCultureIgnoreCase))
                 {
-                    _logger.Debug("Failed to update library for: {0}", settings.Address);
+                    _logger.Debug($"Failed to update library for: {settings.Address}");
                 }
             }
             catch (Exception ex)
@@ -116,7 +116,7 @@ namespace NzbDrone.Core.Notifications.Xbmc
                 return false;
             }
 
-            _logger.Debug("Determining if there are any active players on Kodi host: {0}", settings.Address);
+            _logger.Debug($"Determining if there are any active players on Kodi: {settings.Address}");
             var activePlayers = _proxy.GetActivePlayers(settings);
 
             return activePlayers.Any(a => a.Type.Equals("video"));
@@ -131,7 +131,7 @@ namespace NzbDrone.Core.Notifications.Xbmc
             catch (Exception ex)
             {
                 _logger.Error(ex, "Unable to send test message");
-                return new ValidationFailure("Host", _localizationService.GetLocalizedString("NotificationsValidationUnableToSendTestMessage", new Dictionary<string, object> { { "exceptionMessage", ex.Message } }));
+                return new ValidationFailure(nameof(settings.Address), _localizationService.GetLocalizedString("NotificationsValidationUnableToSendTestMessage", new Dictionary<string, object> { { "exceptionMessage", ex.Message } }));
             }
 
             return null;
