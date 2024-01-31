@@ -36,13 +36,7 @@ namespace NzbDrone.Core.Notifications.Signal
             text.AppendLine(title);
             text.AppendLine(message);
 
-            var urlSignalAPI = HttpRequestBuilder.BuildBaseUrl(
-                settings.UseSsl,
-                settings.Host,
-                settings.Port,
-                "/v2/send");
-
-            var requestBuilder = new HttpRequestBuilder(urlSignalAPI).Post();
+            var requestBuilder = new HttpRequestBuilder(settings.Address).Resource("/v2/send").Post();
 
             if (settings.AuthUsername.IsNotNullOrWhiteSpace() && settings.AuthPassword.IsNotNullOrWhiteSpace())
             {
@@ -75,7 +69,7 @@ namespace NzbDrone.Core.Notifications.Signal
             catch (WebException ex)
             {
                 _logger.Error(ex, "Unable to send test message: {0}", ex.Message);
-                return new ValidationFailure("Host", _localizationService.GetLocalizedString("NotificationsValidationUnableToSendTestMessage", new Dictionary<string, object> { { "exceptionMessage", ex.Message } }));
+                return new ValidationFailure(nameof(settings.Address), _localizationService.GetLocalizedString("NotificationsValidationUnableToSendTestMessage", new Dictionary<string, object> { { "exceptionMessage", ex.Message } }));
             }
             catch (HttpException ex)
             {
@@ -85,12 +79,12 @@ namespace NzbDrone.Core.Notifications.Signal
                 {
                     if (ex.Response.Content.ContainsIgnoreCase("400 The plain HTTP request was sent to HTTPS port"))
                     {
-                        return new ValidationFailure("UseSsl", _localizationService.GetLocalizedString("NotificationsSignalValidationSslRequired"));
+                        return new ValidationFailure(nameof(settings.Address), _localizationService.GetLocalizedString("NotificationsSignalValidationSslRequired"));
                     }
 
                     var error = Json.Deserialize<SignalError>(ex.Response.Content);
 
-                    var property = "Host";
+                    var property = nameof(settings.Address);
 
                     if (error.Error.ContainsIgnoreCase("Invalid group id"))
                     {
@@ -109,12 +103,12 @@ namespace NzbDrone.Core.Notifications.Signal
                     return new ValidationFailure("AuthUsername", _localizationService.GetLocalizedString("NotificationsValidationInvalidUsernamePassword"));
                 }
 
-                return new ValidationFailure("Host", _localizationService.GetLocalizedString("NotificationsValidationUnableToSendTestMessage", new Dictionary<string, object> { { "exceptionMessage", ex.Message } }));
+                return new ValidationFailure(nameof(settings.Address), _localizationService.GetLocalizedString("NotificationsValidationUnableToSendTestMessage", new Dictionary<string, object> { { "exceptionMessage", ex.Message } }));
             }
             catch (Exception ex)
             {
                 _logger.Error(ex, "Unable to send test message: {0}", ex.Message);
-                return new ValidationFailure("Host", _localizationService.GetLocalizedString("NotificationsValidationUnableToSendTestMessage", new Dictionary<string, object> { { "exceptionMessage", ex.Message } }));
+                return new ValidationFailure(nameof(settings.Address), _localizationService.GetLocalizedString("NotificationsValidationUnableToSendTestMessage", new Dictionary<string, object> { { "exceptionMessage", ex.Message } }));
             }
 
             return null;
